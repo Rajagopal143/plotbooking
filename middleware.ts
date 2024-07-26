@@ -13,5 +13,4 @@ export default auth((req) => {
     return Response.redirect(url);
   }
 });
-
-export const config = { matcher: ['/dashboard/:path*'] };
+export const config = { matcher: ['/dashboard/:path*', '/adminlogin'] };

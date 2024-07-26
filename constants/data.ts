@@ -130,22 +130,10 @@ export const navItems: NavItem[] = [
     label: 'user'
   },
   {
-    title: 'Employee',
-    href: '/dashboard/employee',
-    icon: 'employee',
-    label: 'employee'
-  },
-  {
     title: 'Profile',
     href: '/dashboard/profile',
     icon: 'profile',
     label: 'profile'
-  },
-  {
-    title: 'Kanban',
-    href: '/dashboard/kanban',
-    icon: 'kanban',
-    label: 'kanban'
   },
   {
     title: 'Login',
@@ -154,3 +142,7 @@ export const navItems: NavItem[] = [
     label: 'login'
   }
 ];
+const backendUrl = process.env.NEXT_PUBLIC_API_URL;
+export  {
+  backendUrl
+};

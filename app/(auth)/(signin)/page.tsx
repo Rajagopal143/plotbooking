@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import UserAuthForm from '@/components/forms/user-auth-form';
-import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 
@@ -37,7 +36,7 @@ export default function AuthenticationPage() {
       </div>
       <div className="relative flex h-full  flex-col items-center justify-center p-4 lg:p-8">
         <Link
-          href="/adminlogin"
+          href="/signIn"
           className=" absolute right-4  top-4 md:right-8"
         >
           <Button variant="link">Admin Login</Button>

@@ -1,4 +1,3 @@
-'use client';
 import {
   Card,
   CardHeader,
@@ -11,10 +10,11 @@ import { Button } from '@/components/ui/button';
 
 import Link from 'next/link';
 import Adminlogin from '@/components/forms/login';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 
-export default function Component(params: { login: string }) {
- 
+export default function Component() {
   return (
     <div className="flex h-screen w-full items-center justify-center">
       <Card className="mx-auto  max-w-sm">
@@ -25,7 +25,7 @@ export default function Component(params: { login: string }) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Adminlogin/>
+          <Adminlogin />
           <div className="relative py-4">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />
@@ -36,11 +36,11 @@ export default function Component(params: { login: string }) {
               </span>
             </div>
           </div>
-            <Link href='/'>
-          <Button className="ml-auto w-full " variant='outline'>
-            create an account 
-          </Button>
-            </Link>
+          <Link href="/">
+            <Button className="ml-auto w-full " variant="outline">
+              create an account
+            </Button>
+          </Link>
         </CardContent>
       </Card>
     </div>

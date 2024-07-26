@@ -13,12 +13,13 @@ import axios from 'axios';
 
 import {  useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
+
 import { z } from 'zod';
 import { Button } from '../ui/button';
 import Cookies from 'js-cookie'
 import { Input } from '../ui/input';
 import { signIn, useSession } from 'next-auth/react';
+import { toast } from '../ui/use-toast';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
@@ -29,7 +30,6 @@ const formSchema = z.object({
 
 type UserFormValue = z.infer<typeof formSchema>;
 const Adminlogin = () => {
-  const { update: UpdateSession, data: session } = useSession();
       const router = useRouter();
 
     const defaultValues = {
@@ -41,11 +41,9 @@ const Adminlogin = () => {
        defaultValues
      });
 
-     toast('Invalid email and Password..');
-  const onSubmit = async (data: UserFormValue) => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    
-        const signInResult = await signIn('credentials', {
+  toast({ description:'Invalid email and Password..'});
+  const onSubmit = async (data: UserFormValue) => {    
+        const signInResult:any = await signIn('credentials', {
           redirect: false,
           email: data.email,
           password: data.password,
@@ -54,7 +52,7 @@ const Adminlogin = () => {
         if (signInResult.ok) {
           router.push('/dashboard'); // Redirect to the home page or wherever you want
         } else {
-          console.log('Failed to sign in after registration');
+          router.push('/'); // Redirect to the home page or wherever you want
         }
     
    

@@ -1,7 +1,9 @@
 import axios from 'axios';
-import { NextAuthConfig } from 'next-auth';
+import { NextAuthConfig   } from 'next-auth';
 import CredentialProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
+import { JWT } from 'next-auth/jwt';
+
 const authConfig = {
   providers: [
     GoogleProvider({
@@ -17,41 +19,44 @@ const authConfig = {
       async authorize(credentials) {
         try {
           const res = await axios.post(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/auth/org/login`,
-            {
-              email: credentials.email,
-              password: credentials.password
-            }
+            'http://localhost:5000/api/auth/org/login',
+            credentials
           );
-          if (res.ok) {
-            console.log("hi", res.data.user)
-            const user = res.data.user;
-            if (user) {
-              return user;
-            }
-          } else {
-            console.log('Invalid credentials');
+          const user = res.data;
+
+          if (user) {
+            return user;
           }
+          return null;
         } catch (error: any) {
-          throw new Error({message:error});
+          throw new Error(error.response.data.message || 'Login failed');
         }
       }
     })
   ],
+  session: {
+    strategy: 'jwt'
+  },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: JWT; user: any }) {
       if (user) {
-        token.accessToken = user.token;
+        token.id = user._id;
+        token.email = user.email;
+        token.name = user.name;
+        token.accesstoken = user.token;
       }
       return token;
     },
-    async session({ session, token }) {
-      session.accessToken = token.accessToken;
+    async session({ session, token }: { session: any; token: JWT }) {
+      session.user.id = token.id;
+      session.user.email = token.email;
+      session.user.name = token.name;
+      session.token = token.accesstoken;
       return session;
     }
   },
   pages: {
-    signIn: '/' //sigin page
+    signIn: '/signIn' //sigin page
   }
 } satisfies NextAuthConfig;
 
