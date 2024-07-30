@@ -1,25 +1,23 @@
+// components/Dropzone.js
 import React from 'react';
 import { useDropzone } from 'react-dropzone';
 
-const Dropzone: React.FC<{ onDrop: (acceptedFiles: File[]) => void }> = ({
-  onDrop
-}) => {
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
-    maxSize: 1000000 // Max file size in bytes (1MB)
-  });
+const Dropzone = ({ onDrop }) => {
+  const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
   return (
     <div
       {...getRootProps()}
       style={{
-        border: '2px dashed #cccccc',
+        border: '2px dashed #ccc',
         padding: '20px',
-        textAlign: 'center'
+        textAlign: 'center',
+        cursor: 'pointer'
       }}
+      className="h-96 flex items-center justify-center"
     >
       <input {...getInputProps()} />
-      <p>Drag  drop some files here, or click to select files</p>
+      <p>Drag &lsquo;n&lsquo; drop an image here, or click to select one</p>
     </div>
   );
 };

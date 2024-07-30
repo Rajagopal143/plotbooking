@@ -1,9 +1,9 @@
 'use client';
 import { ColumnDef } from '@tanstack/react-table';
 import { User } from '@/constants/data';
-import { CellAction } from './cell-action';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { CellAction } from './cell-action';
 
 export const columns: ColumnDef<User>[] = [
   {

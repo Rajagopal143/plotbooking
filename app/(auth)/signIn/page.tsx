@@ -10,8 +10,6 @@ import { Button } from '@/components/ui/button';
 
 import Link from 'next/link';
 import Adminlogin from '@/components/forms/login';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 
 
 export default function Component() {

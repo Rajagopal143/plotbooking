@@ -1,11 +1,13 @@
 import Providers from '@/components/layout/providers';
-import { Toaster } from '@/components/ui/toaster';
+import { Toaster } from "@/components/ui/sonner"
 import '@uploadthing/react/styles.css';
 import type { Metadata } from 'next';
 import NextTopLoader from 'nextjs-toploader';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { auth } from '@/auth';
+import  LoadingProvider  from '@/components/layout/loadingProvider';
+import Loading from '@/components/Loading';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -21,13 +23,16 @@ export default async function RootLayout({
   const session = await auth();
   return (
     <html lang="en" suppressHydrationWarning>
+        <LoadingProvider>
       <body className={`${inter.className} overflow-hidden`}>
-        <NextTopLoader showSpinner={false} />
-        <Providers session={session}>
-          <Toaster />
-          {children}
-        </Providers>
+          <NextTopLoader showSpinner={false} />
+          <Loading />
+          <Providers session={session}>
+            <Toaster />
+            {children}
+          </Providers>
       </body>
+        </LoadingProvider>
     </html>
   );
 }
