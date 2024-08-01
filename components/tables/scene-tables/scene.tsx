@@ -1,18 +1,15 @@
 'use client';
 import { Button } from '@/components/ui/button';
-import { DataTable } from '@/components/ui/data-table';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
 import { User } from '@/constants/data';
-import { Plus } from 'lucide-react';
+import {  MoreHorizontal, Plus,  Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -20,18 +17,36 @@ import {
 } from '@/components/ui/table';
 import Link from 'next/link';
 import { ColumnDef } from '@tanstack/react-table';
-import { CellAction } from './cell-action';
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
+import { toast } from 'sonner';
 
+interface Scene {
+  _id: string;
+  ProjectType: string;
+  spaceType: string;
+  ImgUrl: string;
+  elements: element[];
+}
+interface element {
+  label: string;
+  description: string;
+}
 export const SceneClient= () => {
   const router = useRouter();
-  const [projects, setProjects] = useState<any[]>([]);
-  const { data: session }: { data: any } = useSession();
+  const [scenes, setscenes] = useState<Scene[]>([]);
+  const { data: session ,status}: any = useSession();
 
      useEffect(() => {
        if (!session) return; // Check if session is available
 
-       const fetchProjects = async () => {
+       const fetchScenes = async () => {
          try {
            const url = `${process.env.NEXT_PUBLIC_API_URL}/api/scene/${session.user.id}`;
            const response = await fetch(url, {
@@ -45,20 +60,14 @@ export const SceneClient= () => {
            }
 
            const data = await response.json();
-           const table = data.map((pro: any) => ({
-             id: pro._id,
-             ProjectType: pro.ProjectType,
-             spaceType: pro.spaceType,
-             Image: pro.ImgUrl
-           }));
-           setProjects(table);
-         } catch (error) {
-           console.error('Error fetching projects:', error);
+           setscenes(data);
+         } catch (error:any) {
+           toast( error.message )
          }
        };
 
-       fetchProjects();
-     }, [session]);
+       fetchScenes();
+     }, [session, status]);
  
 
   return (
@@ -73,7 +82,7 @@ export const SceneClient= () => {
         </Button>
       </div>
       <Separator />
-      {projects && (
+      {scenes && (
         <Table>
           <TableHeader>
             <TableRow>
@@ -87,15 +96,39 @@ export const SceneClient= () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {projects.map((pro: any, index) => (
-              <TableRow key={index}>
-                <TableCell>{pro.id}</TableCell>
+            {scenes.map((pro: Scene, index) => (
+              <TableRow key={pro._id}>
+                <TableCell>{index + 1}</TableCell>
                 <TableCell>{pro.ProjectType}</TableCell>
                 <TableCell>{pro.spaceType}</TableCell>
                 <TableCell>
-                  <Link href={pro.Image}>
+                  <Link href={pro.ImgUrl}>
                     <Button>Open Image</Button>
                   </Link>
+                </TableCell>
+                <TableCell>
+                  <DropdownMenu modal={false}>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+
+                      <DropdownMenuItem
+                        onClick={() =>
+                          router.push(`/dashboard/addproducts/${pro.id}`)
+                        }
+                      >
+                        <Plus className="mr-2 h-4 w-4" /> Add Product
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Trash className="mr-2 h-4 w-4" /> Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </TableCell>
               </TableRow>
             ))}
@@ -126,7 +159,7 @@ const columns: ColumnDef<User>[] = [
     header: 'Image'
   },
   {
-    id: 'actions',
-    cell: ({ row }) => <CellAction data={row.original} />
+    accessorKey: 'actions',
+    header: 'actions'
   }
 ];

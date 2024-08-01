@@ -1,60 +1,62 @@
 'use client';
 import { Button } from '@/components/ui/button';
-import { DataTable } from '@/components/ui/data-table';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { User } from '@/constants/data';
 import { Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { columns } from './columns';
 import { useSession } from 'next-auth/react';
-import axios from 'axios';
+import { Session } from 'next-auth';
 import { useEffect, useState } from 'react';
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow
 } from '@/components/ui/table';
 import Link from 'next/link';
+interface Project {
+  id: string;
+  name: string;
+  location: string;
+  floorplan: string;
+  link: string;
+}
 
-
-export const ProjectClient= () => {
+export const ProjectClient = () => {
   const router = useRouter();
-  const [projects, setProjects] = useState();
-  const { data: session }: { data: any } = useSession();
+  const [projects, setProjects] = useState<Project[]>([]);
+  const { data: session, status }:any= useSession();
 
-      useEffect(() => {
-        const fetchProjects = async () => {
+  useEffect(() => {
+    const fetchProjects = async () => {
+      if (status === 'authenticated') {
+        try {
           const url = `${process.env.NEXT_PUBLIC_API_URL}/api/project/organization/${session.user.id}`;
-          const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/project/organization/${session.user.id}`,
-            {
-              headers: {
-                Authorization: `Bearer ${session.token}`
-              }
+          const response = await fetch(url, {
+            headers: {
+              Authorization: `Bearer ${session.token}`
             }
-          );
-          const data = await response.json();
-          const table:any =[]
-          data.projects.forEach((pro:any) => {
-            const dumy: any = {};
-            dumy['id'] = pro._id;
-            dumy['name'] = pro.ProjectName;
-            dumy['location'] = pro.location;
-            dumy['floorplan'] = pro.imageUrl;
-            dumy['link'] = `http://127.0.0.1:5501/index.html?id=${pro.organizationId}`;
-            table.push(dumy)
           });
+          const data = await response.json();
+          const table = data.projects.map((pro:any) => ({
+            id: pro._id,
+            name: pro.ProjectName,
+            location: pro.location,
+            floorplan: pro.imageUrl,
+            link: `http://127.0.0.1:5501/index.html?id=${pro.organizationId}`
+          }));
           setProjects(table);
-        };
+        } catch (error) {
+          console.error('Failed to fetch projects:', error);
+        }
+      }
+    };
 
-        fetchProjects();
-      }, []);
- 
+    fetchProjects();
+  }, [session, status]);
 
   return (
     <>
@@ -68,27 +70,33 @@ export const ProjectClient= () => {
         </Button>
       </div>
       <Separator />
-      {projects && (
+      {projects.length > 0 && (
         <Table>
           <TableHeader>
             <TableRow>
-              {columns.map((data: any, index) => {
-                return (
-                  <TableHead key={index} className="w-[100px]">
-                    {data.header}
-                  </TableHead>
-                );
-              })}
+              {columns.map((data:any, index) => (
+                <TableHead key={index} className="w-[100px]">
+                  {data.header}
+                </TableHead>
+              ))}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {projects.map((pro: any, index) => (
+            {projects.map((pro, index) => (
               <TableRow key={index}>
                 <TableCell>{pro.id}</TableCell>
                 <TableCell>{pro.name}</TableCell>
                 <TableCell>{pro.location}</TableCell>
-                <TableCell>{pro.floorplan}</TableCell>
-                <TableCell>{pro.link}</TableCell>
+                <TableCell>
+                  <Link href={pro.floorplan}>
+                    <Button> Open Image</Button>
+                  </Link>
+                </TableCell>
+                <TableCell>
+                  <Link href={pro.link}>
+                    <Button> Open Project</Button>
+                  </Link>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -97,4 +105,3 @@ export const ProjectClient= () => {
     </>
   );
 };
-

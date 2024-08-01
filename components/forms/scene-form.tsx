@@ -17,7 +17,6 @@ import Image from 'next/image';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import { LoadingContext } from '../layout/loadingProvider';
-import { revalidatePath } from 'next/cache';
 import { toast } from 'sonner';
 
 interface ProductFormProps {

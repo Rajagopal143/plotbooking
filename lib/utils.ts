@@ -1,10 +1,8 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { Active, DataRef, Over } from '@dnd-kit/core';
-import { ColumnDragData } from '@/components/kanban/board-column';
-import { TaskDragData } from '@/components/kanban/task-card';
 
-type DraggableData = ColumnDragData | TaskDragData;
+
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -13,7 +11,7 @@ export function cn(...inputs: ClassValue[]) {
 export function hasDraggableData<T extends Active | Over>(
   entry: T | null | undefined
 ): entry is T & {
-  data: DataRef<DraggableData>;
+  data: any
 } {
   if (!entry) {
     return false;
@@ -26,4 +24,16 @@ export function hasDraggableData<T extends Active | Over>(
   }
 
   return false;
+}
+
+
+import { DefaultSession } from 'next-auth';
+
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      id: string;
+      // Add other properties you need
+    } & DefaultSession['user'];
+  }
 }

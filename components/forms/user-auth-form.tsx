@@ -11,11 +11,12 @@ import {
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import GoogleSignInButton from '../github-auth-button';
 import { signIn, useSession } from 'next-auth/react';
+import { toast } from 'sonner';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
@@ -29,8 +30,12 @@ const formSchema = z.object({
 
 type UserFormValue = z.infer<typeof formSchema>;
 
-export default function UserAuthForm() {
+export const UserAuthForm: React.FC = () => {
   const router = useRouter();
+  const { data: session } = useSession();
+  if (session?.user?.id) {
+    return router.push('/dashboard');
+  }
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl');
   const [loading, setLoading] = useState(false);
@@ -54,14 +59,12 @@ export default function UserAuthForm() {
         body: JSON.stringify(data)
       }
     );
-    const res =await result.json();
+    const res = await result.json();
     if (result.ok) {
       router.push('/signIn');
     } else {
-      console.log(res);
+      toast(res);
     }
-
-  
   };
 
   return (
@@ -144,4 +147,4 @@ export default function UserAuthForm() {
       <GoogleSignInButton />
     </>
   );
-}
+};

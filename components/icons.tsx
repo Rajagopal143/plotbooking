@@ -32,6 +32,7 @@ import {
   FolderOpenDot
 } from 'lucide-react';
 import { MdOutlineCallToAction } from 'react-icons/md';
+import { AiOutlineProduct } from 'react-icons/ai';
 export type Icon = LucideIcon;
 
 export const Icons = {
@@ -63,6 +64,7 @@ export const Icons = {
   laptop: Laptop,
   project: FolderOpenDot,
   scene:MdOutlineCallToAction,
+  product: AiOutlineProduct ,
   gitHub: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"
